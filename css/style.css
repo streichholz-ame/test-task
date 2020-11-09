@@ -1,0 +1,135 @@
+#add-list {
+    background: rgb(59,89,157);
+    background: linear-gradient(0deg, rgba(59,89,157,1) 0%, rgba(76,133,191,1) 100%);
+    padding: 10px 30px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 3px;
+    border: none;
+}
+
+#add-list i {
+    color: #33496e;
+}
+
+.add-list-button {
+    margin: 30px auto;
+    text-align: center;
+}
+
+body {
+    background-color: rgb(241, 241, 241);
+}
+
+.card {
+    margin-top: 50px;
+    display: none;
+}
+
+.card-body {
+    padding: 0;
+}
+
+.card-heading {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.card-heading:focus {
+    outline: none;
+}
+
+.task-description:focus{
+    outline: none;
+}
+
+#button-addon2 {
+    background: rgb(85,140,108);
+    background: linear-gradient(0deg, rgba(85,140,108,1) 0%, rgba(145,200,171,1) 100%);
+    width: 150px;
+    color: #fff;
+
+}
+
+.card-header {
+    background: rgb(59,89,157);
+    background: linear-gradient(0deg, rgba(59,89,157,1) 0%, rgba(76,133,191,1) 100%);
+    color: #fff;
+}
+
+.edit {
+    width: 200px;
+}
+
+.edit-items {
+    list-style: none;
+    display: flex;
+}
+
+.edit-item {
+    width: 50px;
+    text-align: center;
+}
+
+.edit-item a {
+    color: #999999;
+}
+
+.edit-list, .delete-list {
+    color: #fff;
+    padding: 10px;
+}
+
+.item-change {
+    border-left: 1px solid grey;
+    border-right: 1px solid grey;
+}
+
+.form-control {
+    color: #bbbbbb;
+}
+
+.add-form {
+    padding: 15px;
+    background-color: #dcdcdc;
+}
+
+.input-group-text {
+    border: none;
+    background-color: #dcdcdc;
+}
+
+i {
+    color: #589371;
+    font-size: 1.4rem;
+    text-shadow: -1px -1px 2px #283a2f;
+}
+
+.list-group {
+    border-radius: none;
+}
+
+.list-group-item {
+    padding: 0;
+    border-radius: 0;
+    padding: .7rem;
+}
+
+.list-group .input-group-text {
+    background-color: #fff;
+}
+
+.task-item {
+    display: none;
+}
+
+.task-description:read-only {
+    color: rgb(41, 41, 41);
+    background-color: #fff;
+}
+
+.task-description {
+    border: none;
+}
