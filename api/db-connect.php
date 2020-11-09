@@ -1,2 +1,2 @@
 <?php
-$dbh = new PDO('mysql:host=' . getenv('MYSQL_SERVER') . ';dbname=' . getenv('MYSQL_DB'), getenv('MYSQL_LOGIN'), getenv('MYSQL_PASSWORD'));
+$dbh = new PDO('mysql:host=' . $_ENV['MYSQL_SERVER'] . ';dbname=' . $_ENV['MYSQL_DB'], $_ENV['MYSQL_LOGIN'], $_ENV['MYSQL_PASSWORD']);
