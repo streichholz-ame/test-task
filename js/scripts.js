@@ -23,6 +23,7 @@ class ToDoList {
         let editListBtn        = currentListTemplate.find(".edit-list");
         let deleteListBtn      = currentListTemplate.find(".delete-list");
         let listHeading        = currentListTemplate.find(".card-heading");
+        let taskDeadlineField  = currentListTemplate.find("input[name='task-deadline']");
         let that = this;
         deleteListBtn.click(this.deleteList.bind(this));
         editListBtn.click(this.editListHeading.bind(currentListTemplate));
@@ -31,6 +32,7 @@ class ToDoList {
             if(e.which == 13) {
                 that.sendListUpdateRequest(that.getListId(currentListTemplate), listHeading.val(), currentListTemplate);
                 listHeading.attr("readonly", true);
+                taskDeadlineField.attr("disabled", true);
             }
         });
     }
@@ -71,7 +73,6 @@ class ToDoList {
         let currentListTemplate = this.listTemplate.clone();
         if (data){
             this.fillList(currentListTemplate, data);
-            console.log(true)
         }
         else{
             this.createList(currentListTemplate);
@@ -120,6 +121,11 @@ class ToDoList {
         let currentTaskId = currentTaskTemplate.find("input[name='task-id']");
         currentTaskId.val(data.id);
 
+        let currentDeadline = currentTaskTemplate.find("input[name='task-deadline']");
+        currentDeadline.val(data.deadline);
+
+        $(currentTaskTemplate).attr('id', 'id_' + data.id);
+
         $(taskCheckbox).prop("checked", data.isDone == 1 ? true: false);
     }
 
@@ -144,10 +150,13 @@ class ToDoList {
         let currentTaskList     = currentCard.find(".list-group");
         let taskInputField = currentCard.find(".task-input");
         let currentListId = currentCard.find("input[name='list-id']");
+        let currentTaskId = currentTaskTemplate.find("input[name='task-id']");
         let that = this;
+        let deadline = currentTaskTemplate.find("input[name='task-deadline']");
         let taskCheckbox = currentTaskTemplate.find(".task-is-done");
-        
         let taskName = currentTaskTemplate.find(".task-description");
+
+        $(deadline).datepicker({ dateFormat: 'yy-mm-dd'});
         
 
         if (data) {
@@ -157,11 +166,14 @@ class ToDoList {
             $.post("api/add-task.php", {name:taskInputField.val(), toDoList_id:currentListId.val()}, function(data) {
                 data = JSON.parse(data);
                 taskName.val(data.name);
+                currentTaskId.val(data.id);
+                $(currentTaskTemplate).attr('id', 'id_' + data.id);
               });
         }
 
         let editTaskBtn         = currentTaskTemplate.find(".edit-task");
         let deleteTaskBtn       = currentTaskTemplate.find(".delete-task");
+        let moveTaskBtn         = currentTaskTemplate.find(".move-task")
         currentTaskList.append(currentTaskTemplate);
         
         if (this.placeTaskInput(currentCard, currentTaskTemplate)) {
@@ -169,16 +181,19 @@ class ToDoList {
 
             deleteTaskBtn.click(this.deleteTask.bind(this));
             editTaskBtn.click(this.editTask.bind(currentTaskTemplate));
+            this.dragTask(moveTaskBtn);
 
             $(taskCheckbox).change(function() {
-                that.sendTaskUpdateRequest(that.getTaskId(currentTaskTemplate), taskName.val(), taskCheckbox.prop("checked"), currentTaskTemplate);
-                taskDescriptionField.attr("readonly", true);
+                that.sendTaskUpdateRequest(that.getTaskId(currentTaskTemplate), taskName.val(), taskCheckbox.prop("checked"), deadline.val(), currentTaskTemplate);
+                taskName.attr("readonly", true);
+                deadline.attr("disabled", true);
               });
             
             $(currentTaskTemplate).on('keypress',function(e) {
                 if(e.which == 13) {
-                    that.sendTaskUpdateRequest(that.getTaskId(currentTaskTemplate), taskName.val(), taskCheckbox.prop("checked"), currentTaskTemplate);
-                    taskDescriptionField.attr("readonly", true);
+                    that.sendTaskUpdateRequest(that.getTaskId(currentTaskTemplate), taskName.val(), taskCheckbox.prop("checked"), deadline.val(), currentTaskTemplate);
+                    taskName.attr("readonly", true);
+                    deadline.attr("disabled", true);
                 }
             });
         }
@@ -193,15 +208,16 @@ class ToDoList {
             alert ("Enter the description of task");
             return false;
         }
-        console.log('addTaskEvent',currentCard, taskInputField, taskInput);
 
         this.addTask(currentCard);
     }
 
-    sendTaskUpdateRequest(id, name, isDone, currentTaskTemplate){
-        $.post("api/edit-task.php?id="+id, {name:name, isDone:isDone}, function(data) {
+    sendTaskUpdateRequest(id, name, isDone, deadline, currentTaskTemplate){
+        $.post("api/edit-task.php?id="+id, {name:name, isDone:isDone, deadline:deadline}, function(data) {
             let taskDescriptionField = currentTaskTemplate.find(".task-description");
+            let deadline = currentTaskTemplate.find("input[name='task-deadline']");
             data = JSON.parse(data);
+            deadline.val(data.deadline);
             taskDescriptionField.val(data.name);
           });
     }
@@ -209,7 +225,9 @@ class ToDoList {
     editTask(event){
         event.preventDefault();
         let taskDescriptionField = this.find(".task-description");
+        let taskDeadlineField = this.find("input[name='task-deadline']");
         taskDescriptionField.attr("readonly", false);
+        taskDeadlineField.attr("disabled", false);
         taskDescriptionField.focus();
     }
 
@@ -221,6 +239,23 @@ class ToDoList {
         $.get("api/delete-task.php", {id:currentTaskId}, function() {
             currentDelBtn.closest(".task-item").remove();
         });
+    }
+
+    
+    dragTask(moveTaskBtn){
+        $( function() {
+            let draggable = moveTaskBtn.closest(".list-group");
+            draggable.sortable({
+                attribute: "id",
+                placeholder: "ui-state-highlight",
+                update: function() {
+                    let data = draggable.sortable('toArray');
+                    data.shift();
+                    $.post("api/update-position.php", {ids:data});
+                }
+              });
+            moveTaskBtn.closest(".list-group").disableSelection();
+          } );
     }
 
     createEvents(){

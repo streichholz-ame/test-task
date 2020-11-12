@@ -1,7 +1,11 @@
 <?php 
 require "db-connect.php";
 
-$data = $dbh->prepare('SELECT id, name, isDone FROM Task WHERE toDoList_id = ?');
+if (empty(trim($_GET['id']))) {
+    die('ID is empty!');
+}
+
+$data = $dbh->prepare('SELECT id, name, isDone, deadline FROM Task WHERE toDoList_id = ? ORDER BY position ASC');
 
 $data->execute([$_GET['id']]);
 
