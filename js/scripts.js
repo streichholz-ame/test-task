@@ -63,10 +63,15 @@ class ToDoList {
     }
 
     addListEvent(event){
-        this.addList();
-
         let listName = this.list.find(".add-list-name");
-        listName.val("");
+
+        if ($.trim(listName.val()) !== '') {
+            this.addList();
+            listName.val("");
+        }
+        else {
+            alert('Name cannot be empty!');
+        }
     }
 
     addList(data){
